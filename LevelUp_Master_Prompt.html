@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LevelUp Master Prompt & Architecture Blueprint</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.5.0/github-markdown.min.css">
+    <style>
+        body {
+            box-sizing: border-box;
+            min-width: 200px;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 45px;
+            background-color: #0d1117;
+            color: #c9d1d9;
+        }
+        .markdown-body {
+            box-sizing: border-box;
+            min-width: 200px;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 45px;
+        }
+        @media (max-width: 767px) {
+            .markdown-body {
+                padding: 15px;
+            }
+        }
+        #markdown-content {
+            display: none;
+        }
+    </style>
+</head>
+<body class="markdown-body dark">
+    <div id="content">Loading...</div>
+    <textarea id="markdown-content">
+# 🏗️ LevelUp — $100M Enterprise Platform Master Prompt & Architecture Blueprint
+
+&gt; **Role:** You are an elite world-class full-stack developer, prompt engineer, project manager, and system architect. You are building **LevelUp** — a $100M-grade, enterprise-scale MERN-stack career-preparation web application for B.Tech colleges in India. Every decision must reflect production-grade engineering: scalable, secure, beautiful, and maintainable.
+
+---
+
+## 📋 Table of Contents
+
+1. [Platform Vision & Core Philosophy](#1-platform-vision--core-philosophy)
+2. [User Roles & Hierarchy](#2-user-roles--hierarchy)
+3. [Classroom Code System](#3-classroom-code-system)
+4. [AI Data Analysis Integration](#4-ai-data-analysis-integration)
+5. [Page-by-Page Feature Specification](#5-page-by-page-feature-specification)
+6. [Database Schema Design](#6-database-schema-design)
+7. [API Architecture](#7-api-architecture)
+8. [Role-Based Access Control (RBAC)](#8-role-based-access-control-rbac)
+9. [Tech Stack & Infrastructure](#9-tech-stack--infrastructure)
+10. [Design System & UX Guidelines](#10-design-system--ux-guidelines)
+
+---
+
+## 1. Platform Vision & Core Philosophy
+
+**LevelUp** bridges the gap between academia and industry for B.Tech students across India. It is not just a learning platform — it is a **complete college career ecosystem** that connects students, faculty, department heads, principals, and placement officers through a unified, intelligent system.
+
+### Core Principles
+- **Classroom-Centric Architecture**: Every student belongs to a classroom code. All data flows through this hierarchy.
+- **Role-Aware Intelligence**: Each user type sees exactly what they need — no more, no less.
+- **AI-First Analytics**: Every interaction generates data that feeds into the AI Data Analysis engine for real-time insights.
+- **Production-Grade Quality**: Enterprise security, scalability, and UX standards at every layer.
+
+---
+
+## 2. User Roles & Hierarchy
+
+```
+┌─────────────────────────────────────────────────────┐
+│                    PRINCIPAL                         │
+│           (Access: ALL departments, ALL classes)     │
+├─────────────────────────────────────────────────────┤
+│              HEAD OF PLACEMENT                      │
+│           (Access: ALL departments, ALL classes)     │
+├─────────────────────────────────────────────────────┤
+│                      HOD                            │
+│      (Access: OWN department, ALL classes in dept)  │
+│      e.g. CSE HOD → 2nd-A, 2nd-B, 3rd-A, 4th-C   │
+├─────────────────────────────────────────────────────┤
+│                    FACULTY                          │
+│      (Access: ASSIGNED classes only)                │
+│      e.g. Prof. Sharma → CSE-3A, CSE-3B            │
+├─────────────────────────────────────────────────────┤
+│                    STUDENT                          │
+│      (Access: OWN classroom only)                   │
+│      e.g. Rohan → CSE-3A                           │
+└─────────────────────────────────────────────────────┘
+```
+
+### Role Definitions
+
+| Role | Scope | Primary Pages | Analytics Access |
+|---|---|---|---|
+| **Student** | Own classroom only | Dashboard, Learning, Live Interview, AI Resume, Roadmap, College Assessment, Curriculum Activities, Student Benefits | Own data only |
+| **Faculty** | Assigned classes (class teacher) | Dashboard, College Assessment (add assignments, attendance, notices), + all student pages (read-only preview) | Class-level analytics |
+| **HOD** | Entire department (all years, all sections) | Dashboard + AI Data Analyst with Visualization, + all student pages (view only) | Department-level analytics |
+| **Principal** | All departments, entire college | Dashboard + AI Data Analyst with Visualization, + all student pages (view only) | College-wide analytics |
+| **Head of Placement** | All departments, entire college | Dashboard + AI Data Analyst with Visualization, + all student pages (view only) | College-wide analytics with placement focus |
+
+---
+
+## 3. Classroom Code System
+
+&gt; The **Classroom Code** is the foundational unit of the entire platform. It acts as the unique namespace for grouping students and routing data.
+
+### Code Format
+```
+{DEPARTMENT}-{YEAR}{SECTION}
+```
+
+### Examples
+| Code | Meaning |
+|---|---|
+| `CSE-3A` | Computer Science, 3rd Year, Section A |
+| `ECE-2B` | Electronics, 2nd Year, Section B |
+| `MECH-4C` | Mechanical, 4th Year, Section C |
+| `IT-2D` | Information Technology, 2nd Year, Section D |
+
+### How It Works
+
+1. **Student Registration**: Student selects their department, year, and section → system auto-generates their classroom code (e.g., `CSE-3A`). Student is permanently tagged with this code.
+2. **Faculty Assignment**: Faculty are assigned to one or more classroom codes. They can only manage (assignments, attendance, announcements) those specific classrooms.
+3. **HOD Aggregation**: HOD sees all classroom codes within their department (e.g., all `CSE-*` codes).
+4. **Principal / Placement**: See all classroom codes across all departments.
+5. **Data Routing**: All student activity data (study time, quiz scores, resume scores, interview sessions) is tagged with the student's classroom code and stored in the database. This data flows up the hierarchy.
+
+### Database Impact
+- Every `User` document stores a `classroomCode` field.
+- Every `Activity`, `QuizAttempt`, `Resume`, `Assignment`, `Attendance` document references the student's `classroomCode`.
+- Queries for faculty/HOD/principal filter by classroom code range.
+
+---
+
+## 4. AI Data Analysis Integration
+
+&gt; **Reference Project**: `ai-data-analyst` (previously built). This project's visualization and analysis engine will be integrated into the LevelUp platform for faculty, HOD, principal, and head of placement dashboards.
+
+### Data Flow Architecture
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│                     STUDENT ACTIVITY                          │
+│  (Study Timer, Quiz Results, Resume Scores, Interview        │
+│   Sessions, Learning Progress, Live Chat History)            │
+└────────────────────────┬─────────────────────────────────────┘
+                         │ Tagged with classroomCode
+                         ▼
+┌──────────────────────────────────────────────────────────────┐
+│                   MONGODB DATABASE                            │
+│  Collections: activities, quiz_attempts, resumes,             │
+│  assignments, attendance, interview_sessions                  │
+│  (All documents indexed by classroomCode)                    │
+└────────────────────────┬─────────────────────────────────────┘
+                         │ Aggregated via API
+                         ▼
+┌──────────────────────────────────────────────────────────────┐
+│              AI DATA ANALYSIS ENGINE                          │
+│  - Aggregation by classroomCode / department / college       │
+│  - AI-powered trend analysis                                 │
+│  - Natural language query interface                          │
+│  - Automated insight generation                              │
+└────────────────────────┬─────────────────────────────────────┘
+                         │ Rendered as
+                         ▼
+┌──────────────────────────────────────────────────────────────┐
+│              VISUALIZATION DASHBOARD                          │
+│  - Charts (Bar, Line, Pie, Area, Radar, Heatmap)             │
+│  - Tables with sorting/filtering                             │
+│  - PDF/CSV Export                                            │
+│  - Real-time classroom comparison                            │
+│  - AI chat interface for querying data                       │
+└──────────────────────────────────────────────────────────────┘
+```
+
+### What Data Feeds the AI Analyst
+
+| Data Source | Metrics Provided |
+|---|---|
+| **Study Timer** | Total study hours per student, per class, average study time, daily/weekly/monthly trends |
+| **Quiz Attempts** | Average scores per class, highest/lowest performers, subject-wise breakdown |
+| **Resume Analysis** | Average ATS score per class, highest resume scores, keyword gaps |
+| **Live Interview** | Number of mock interviews, average duration, topic distribution |
+| **Learning Modules** | Module completion %, quiz pass rates, time-to-completion |
+| **Daily Streaks** | Consistency metrics, streak leaders per class |
+| **Attendance** | Daily/monthly attendance %, absentee trends |
+| **Assignments** | Submission rates, on-time vs late submissions, grade distributions |
+
+### Visualization Types
+- **Class-level heatmaps**: Study hours across days of the week per classroom
+- **Department comparison**: Bar charts comparing average metrics across classes
+- **Individual student radar charts**: Multi-axis comparison (study time, quiz score, resume score, interview prep)
+- **Trend lines**: Week-over-week improvement in key metrics
+- **Leaderboard tables**: Top performers by various metrics
+- **AI-generated summaries**: Natural language reports ("CSE-3A has improved their average study time by 40% this month")
+
+---
+
+## 5. Page-by-Page Feature Specification
+
+---
+
+### 5.1 🏠 HOME PAGE (Public — Landing)
+
+**Route:** `/`
+
+**Sections (in order):**
+
+#### Hero Section
+- Bold headline: "Transform Your Career Trajectory"
+- Sub-headline emphasizing the platform bridges academia → industry
+- Primary CTA: "Get Started" → `/register`
+- Secondary CTA: "Explore Dashboard" → `/login`
+- Animated background gradient orbs, subtle particle effects
+- Floating stats badges (e.g., "10,000+ students", "500+ colleges")
+
+#### Dashboard Preview CTA
+- Interactive mockup showing what the dashboard looks like
+- Glassmorphism card with animated preview
+- "See your personalized dashboard →" CTA button
+
+#### Vision Section
+- 3-column layout with icons illustrating the platform mission:
+  1. **For Students**: Career-ready skills in one place
+  2. **For Faculty**: Real-time classroom analytics
+  3. **For Institutions**: Data-driven placement insights
+- Motion animations on scroll
+
+#### About Section
+- Brief platform story
+- Key statistics (students served, colleges onboarded, placement rate improvement)
+- Founder / team section (optional)
+
+#### Footer
+- Links: About, Privacy, Terms, Contact, Social
+- College partner logos carousel (if any)
+- Copyright + branding
+
+---
+
+### 5.2 🔐 AUTH PAGES
+
+#### Login (`/login`)
+- Email + password with glassmorphism card
+- Role detection post-login → auto-route to correct dashboard
+- "Forgot Password" link
+- OAuth social login buttons (future: Google/Microsoft)
+
+#### Register (`/register`)
+- Multi-step or single form:
+  1. **Name, Email, Password**
+  2. **Role Selection**: Student / Faculty / HOD / Principal / Placement Head
+  3. **College / Institution**
+  4. **Department** (required for all except principal)
+  5. **Year** (for student: current year; for faculty: assigned year/class)
+  6. **Section** (for student + faculty): A, B, C, D, etc.
+  7. → System auto-generates `classroomCode` from Department + Year + Section
+- Visual role-selection cards with icons
+- Success animation with confetti
+
+---
+
+### 5.3 📊 STUDENT DASHBOARD
+
+**Route:** `/dashboard` (when role = student)
+
+#### Timer & Stopwatch Section
+- **Two modes**: Stopwatch (count up) and Countdown Timer
+- Category selector: DSA, Web Dev, ML/AI, System Design, Core CS, Aptitude, etc.
+- Session label: "What are you working on?"
+- **Large digital display** with running time
+- Play / Pause / Stop controls
+- On stop → auto-save session to database with category, duration, label, classroomCode
+- Today's summary: total time, session count
+
+#### Daily Streak Box 🔥
+- **Streak counter** with flame icon
+- **Celebration animation on entry**: When student opens dashboard:
+  - If streak ≥ 7 days → 🎉 confetti explosion + "7-Day Streak! 🔥" banner
+  - If streak ≥ 30 days → 🎊 fireworks animation + achievement badge
+  - If streak ≥ 100 days → 🏆 full-screen celebration with trophy animation
+- Streak calendar visualization (GitHub-style contribution graph)
+- "Don't break the chain!" motivation message
+
+#### Start Learning CTA
+- Prominent card linking to `/modules` (Learning Hub)
+- Shows current module in progress
+- Progress bar of active course
+
+#### Analytics Overview
+- Pie chart: time distribution across categories (DSA, Web Dev, etc.)
+- Area chart: 7-day study consistency trend
+- Stats cards: Today's focus, monthly total, sessions count, day streak
+
+#### Binaural Beats Player 🎧
+- **Pre-study focus mode**: 10-minute timer
+- Frequency options:
+  - 45 Hz Gamma (deep focus)
+  - 40 Hz Gamma (learning & memory)
+  - 14 Hz Beta (alertness)
+  - 10 Hz Alpha (relaxation)
+- Play/Pause controls with waveform visualization
+- Auto-starts 10 minutes before a scheduled study session (if configured)
+- Option to play during study timer
+
+#### Task Checklist Box ✅
+- Daily task list with checkboxes
+- Add new tasks inline
+- Mark as complete with strikethrough + animation
+- Persist to database per user per day
+- Progress indicator: "3 of 7 tasks completed"
+
+#### Quick Action Cards
+- AI Mock Interview → `/interview`
+- Resume Analyzer → `/resume`
+- Learning Hub → `/modules`
+- Career Roadmap → `/roadmap`
+
+---
+
+### 5.4 📚 LEARNING PAGE
+
+**Route:** `/modules`
+
+#### Course Cards Grid
+Each card represents a course/language:
+- **Java**, **C**, **C++**, **Python**, **JavaScript**, **TypeScript**, **Go**, **Rust**
+- **Generative AI**, **Machine Learning**, **Deep Learning**
+- **Data Structures & Algorithms**, **System Design**
+- **SQL**, **MongoDB**, **Docker**, **Kubernetes**, **AWS/Cloud**
+
+#### Card Design
+- Course icon/logo
+- Course title
+- Brief description
+- Difficulty badge (Beginner / Intermediate / Advanced)
+- Lesson count + estimated duration
+- Progress ring (if in progress)
+- Quiz score (if attempted)
+- "Start" or "Continue" CTA button
+
+#### On Click → Course Detail Page (`/modules/:slug`)
+- **Course Overview**: What is Java? Where is Java used? Industry applications, salary data
+- **Lesson List**: Sequential lessons with completion checkmarks
+- **Each Lesson**: Rich content (markdown rendered), code examples, diagrams
+- **In-Browser Terminal**: Integrated code editor (Monaco/CodeMirror) with execution capability for practice
+  - Supports: Java, Python, C, C++, JavaScript
+  - Run button → sends code to backend sandboxed executor or WebContainer
+  - Output panel below
+- **Quiz**: At end of module, interactive quiz with scoring
+- **Discussion / Study Group**: Per-course group chat
+  - "Java Group", "Python Group", "DSA Group"
+  - Students can post questions, share resources, help each other
+  - Real-time via Socket.io
+
+---
+
+### 5.5 🎙️ LIVE INTERVIEW / AI CHAT
+
+**Route:** `/interview`
+
+#### AI Live Interview Chat
+- **Speech-to-Text → AI Analysis → Text-to-Speech** pipeline
+- Student speaks → browser captures audio → transcribed to text
+- AI processes the text → generates intelligent response
+- AI response rendered as text AND spoken back via TTS
+- **Full conversation history** displayed as chat bubbles
+
+#### Two-Way Interactive AI
+&gt; **Critical Feature**: Solve the "dead chat" problem seen in ChatGPT/Gemini voice mode
+- After AI responds to the student, **AI proactively asks 2 follow-up questions** related to the topic
+- This ensures the conversation keeps flowing even if the student runs out of questions
+- Example flow:
+  ```
+  Student: "Explain polymorphism in Java"
+  AI: [Explains polymorphism with examples]
+  AI: "Now here's a question for you — Can you explain the difference 
+       between compile-time and runtime polymorphism? Also, can you give 
+       me a real-world scenario where you'd prefer method overriding 
+       over overloading?"
+  ```
+
+#### Language Accent Options
+- **Indian English** (default) — familiar accent for Indian students
+- **British English** — for UK/international company prep
+- **American English** — for US-facing companies
+
+#### Interview Tips Section
+- Curated tips for technical interviews
+- Behavioral interview framework (STAR method)
+- Common mistakes to avoid
+- Company-specific tips (FAANG, Infosys, TCS, etc.)
+
+#### Foreign Language Learning Section (Bottom of Page)
+- Alphabets comparison: English ↔ French, German, Japanese, Chinese
+- Interactive: Click on "A" → see equivalent in all selected languages
+- Language selector: French, German, Japanese, Mandarin Chinese
+- Basic phrases for each language
+- Audio pronunciation for each letter/phrase
+
+---
+
+### 5.6 📄 AI RESUME ANALYSIS
+
+**Route:** `/resume`
+
+&gt; *Already built in current codebase — enhance with classroom code tagging*
+
+#### Features
+- Upload PDF resume
+- AI-powered ATS scoring (1-100)
+- Keyword analysis against target job descriptions
+- Section-by-section breakdown (Education, Experience, Skills, Projects)
+- Actionable improvement suggestions
+- Before/After score comparison
+- **Score stored in DB tagged with classroomCode** → feeds into admin analytics
+- Resume history: track improvement over time
+
+---
+
+### 5.7 🗺️ CAREER ROADMAP
+
+**Route:** `/roadmap`
+
+&gt; *Already built — enhance with classroom integration*
+
+- AI-generated personalized roadmap based on:
+  - Current skills
+  - Target companies
+  - Target role
+  - Timeline
+- Day-by-day study plan for 3/6/12 months
+- Milestone checkpoints with progress tracking
+- Visual timeline with branching paths
+
+---
+
+### 5.8 🏫 COLLEGE ASSESSMENT (Faculty-Managed)
+
+**Route:** `/assessment`
+
+&gt; **Accessible by**: Faculty (full CRUD for assigned classes), Students (view their class only)
+
+#### Subject-Wise Assignments
+- Faculty selects classroom code → uploads assignment
+- Fields:
+  - Subject name
+  - Assignment title
+  - Description (rich text)
+  - Deadline date/time
+  - Attachments (PDF, images)
+  - Max marks
+- Students see assignments for their classroom code
+- **Submission System**: Students can submit (file upload or text) before deadline
+- Faculty can view submissions, mark late submissions, grade
+
+#### Announcements & Notices
+- Faculty posts announcements for specific classroom code(s)
+- Rich text with optional attachments
+- Push notification to students (future: web push)
+- Pinned notices stay at top
+- Archive old notices
+
+#### Attendance Management
+- **Daily Attendance**: Faculty marks present/absent for their class
+  - Student list auto-populated from classroom code
+  - Quick bulk actions: "Mark all present"
+  - Individual toggle
+- **Monthly Attendance Summary**: Auto-calculated percentage
+  - Per-student attendance chart
+  - Department average
+  - AI alerts: Flag students below 75%
+- **Mode**: Faculty manually inputs OR AI calculates from daily logs
+
+---
+
+### 5.9 🌐 OTHER CURRICULUM ACTIVITIES (MNC Programs)
+
+**Route:** `/activities`
+
+#### MNC Programs for Students
+Card grid showcasing external programs from top companies:
+
+| Program | Company | Card Details |
+|---|---|---|
+| Google Student Ambassador | Google | Logo, description, start date, end date, apply link |
+| Microsoft Learn Student Ambassador | Microsoft | Logo, description, deadline, eligibility |
+| Amazon Student Partner | Amazon | Logo, description, deadline |
+| GFG Campus Ambassador | GeeksforGeeks | Logo, description |
+| Google Cloud Arcade | Google Cloud | Logo, badge system, deadlines |
+| GitHub Campus Expert | GitHub | Logo, application process |
+| AWS Educate | Amazon | Logo, free credits, courses |
+| Meta Developer Circles | Meta | Logo, community programs |
+
+#### Card Design
+- Company logo/image
+- Program title
+- Brief description (auto-fetched or curated by AI)
+- **Start Date** & **End Date / Deadline**
+- Apply / Learn More button
+- Tags: "Free", "Certificate", "Stipend", "Networking"
+
+#### AI-Powered Program Discovery
+- AI scans and suggests relevant programs based on student's profile and interests
+- "Programs matching your skills" personalized section
+
+---
+
+### 5.10 🎓 STUDENT BENEFITS & DISCOUNTS
+
+**Route:** `/benefits`
+
+#### Categories:
+
+**Student Discounts**
+- GitHub Student Developer Pack (free tools)
+- JetBrains All Products Pack (free for students)
+- Figma Education (free)
+- AWS Educate credits
+- Azure for Students
+- Google Cloud credits
+- Canva Pro (free for education)
+- Notion (free for students)
+- Spotify Student discount
+- Apple Music Student discount
+- Amazon Prime Student
+
+**How to Create a Student Email ID**
+- Step-by-step guide specific to Indian colleges
+- Benefits of having a `.edu` email
+- How to verify student status on various platforms
+
+**Coding Platform Discounts**
+- LeetCode Premium (student pricing)
+- AlgoExpert deals
+- Coursera Financial Aid guide
+- Udemy discount strategies
+
+**Best Laptops for Students**
+- Category-wise recommendations:
+  - **Budget (₹30K-50K)**: Best value picks
+  - **Mid-Range (₹50K-80K)**: Balanced performance
+  - **Professional & Heavy Tasks (₹80K-1.2L)**: Intel Ultra/Apple M-series
+  - **Earning Setup (₹1.2L+)**: For freelancing, ML, video editing
+- Key specs comparison table
+- Intel Ultra processor lineup explained
+- "Best for coding" vs "Best for ML" vs "Best for design"
+
+**Student Earning Opportunities**
+- Freelancing platforms (Fiverr, Upwork, Toptal)
+- Open source contributions (GSoC, MLH)
+- Technical writing (Dev.to, Medium Partner Program)
+- Campus ambassador stipends
+
+---
+
+### 5.11 📊 FACULTY DASHBOARD (Enhanced)
+
+**Route:** `/admin` (when role = faculty)
+
+#### Faculty Main Dashboard
+- **Class Selector**: Dropdown of assigned classroom codes
+- **KPI Cards**: Total students, average study time, quiz average, resume score average
+- **Engagement Leaderboard**: Top 10 students by study hours
+- **Live Quiz Feed**: Recent quiz attempts with scores
+- **Attendance Overview**: This week's attendance summary
+
+#### College Assessment Panel (embedded)
+- Quick-access tabs for Assignments, Attendance, Notices
+- Per-class filtered views
+- One-click actions (add assignment, mark attendance)
+
+#### Student Pages (Read-Only Access)
+- Faculty can view (but not interact with) student-facing pages:
+  - Learning Hub, Live Interview, AI Resume, Roadmap, Curriculum Activities, Student Benefits
+- Purpose: Stay aware of what students have access to
+
+---
+
+### 5.12 📈 HOD DASHBOARD
+
+**Route:** `/admin` (when role = hod)
+
+#### Department Analytics Dashboard
+- **Department Selector**: All classroom codes within their department
+- **Aggregate KPIs**: Total students across all classes, department-wide study hours, average scores
+- **Class Comparison Charts**: Bar charts comparing classes (e.g., CSE-3A vs CSE-3B vs CSE-3C)
+- **AI Data Analyst Panel**: Full integration with the AI data analysis project
+  - Natural language query box: "Show me the study time trend for CSE-3A last month"
+  - Auto-generated visualizations: Charts, heatmaps, tables
+  - Export to PDF/CSV
+- **Placement Readiness Score**: Per-class aggregated metric
+
+#### Student Pages (View-Only)
+- Same read-only access as faculty
+
+---
+
+### 5.13 🏛️ PRINCIPAL & HEAD OF PLACEMENT DASHBOARD
+
+**Route:** `/admin` (when role = principal or placement)
+
+#### College-Wide Analytics Dashboard
+- **Department Filter + Class Filter**: Drill from college → department → class → student
+- **Global KPIs**: Total students, total departments, college-wide study hours, overall quiz average, overall resume score, placement readiness index
+- **Department Comparison**: Compare CSE vs ECE vs MECH vs IT
+- **Top Performers College-Wide**: Leaderboard of best students across all departments
+- **AI Data Analyst (Full Access)**: Complete AI data visualization suite
+  - All chart types: Bar, Line, Pie, Area, Radar, Heatmap, Scatter
+  - AI-generated weekly/monthly reports
+  - "Ask AI" chat interface for querying any metric
+  - Anomaly detection: "CSE-3B's average study time dropped 60% this week"
+  - Predictive analytics: "Based on current trends, these students are at risk"
+
+#### Placement Head Specific Views
+- **Placement Readiness Index**: Score combining resume quality, interview practice, skill coverage
+- **Company-Ready Students**: Filter students who meet criteria for specific companies
+- **Skills Gap Analysis**: What the current batch is missing vs market demands
+- **Resume Quality Distribution**: Histogram of ATS scores across batches
+
+---
+
+## 6. Database Schema Design
+
+### User Schema (Enhanced)
+```javascript
+{
+  name: String,                    // required
+  email: String,                   // required, unique
+  password: String,                // required, hashed
+  role: Enum['student', 'faculty', 'hod', 'principal', 'placement'],
+  college: String,                 // required
+  department: String,              // required for all except principal
+  year: Number,                    // for student & faculty (1-4)
+  section: String,                 // A, B, C, D, etc.
+  classroomCode: String,           // auto-generated: "{DEPT}-{YEAR}{SECTION}"
+  assignedClassrooms: [String],    // for faculty: multiple classroom codes
+  profilePicture: String,
+  skills: [String],
+  targets: {
+    companies: [String],
+    roles: [String],
+    timeline: String
+  },
+  streak: {
+    current: Number,
+    longest: Number,
+    lastActiveDate: Date
+  },
+  dailyTasks: [{
+    text: String,
+    completed: Boolean,
+    date: Date
+  }],
+  timestamps: true
+}
+```
+
+### Activity Schema
+```javascript
+{
+  userId: ObjectId (ref: User),
+  classroomCode: String,           // indexed for aggregation
+  department: String,              // indexed
+  college: String,                 // indexed
+  category: Enum['dsa', 'webdev', 'ml', 'system_design', 'core_cs', 'aptitude', ...],
+  label: String,
+  duration: Number,                // seconds
+  date: Date,
+  timestamps: true
+}
+```
+
+### Assignment Schema
+```javascript
+{
+  classroomCode: String,           // which class
+  subject: String,
+  title: String,
+  description: String,
+  attachments: [String],           // file URLs
+  deadline: Date,
+  maxMarks: Number,
+  createdBy: ObjectId (ref: User), // faculty
+  submissions: [{
+    studentId: ObjectId (ref: User),
+    fileUrl: String,
+    text: String,
+    submittedAt: Date,
+    isLate: Boolean,
+    grade: Number,
+    feedback: String
+  }],
+  timestamps: true
+}
+```
+
+### Attendance Schema
+```javascript
+{
+  classroomCode: String,
+  date: Date,
+  markedBy: ObjectId (ref: User),  // faculty
+  records: [{
+    studentId: ObjectId (ref: User),
+    status: Enum['present', 'absent', 'late']
+  }],
+  timestamps: true
+}
+```
+
+### Announcement Schema
+```javascript
+{
+  classroomCodes: [String],        // can target multiple classes
+  title: String,
+  content: String,                 // rich text
+  attachments: [String],
+  isPinned: Boolean,
+  createdBy: ObjectId (ref: User), // faculty
+  timestamps: true
+}
+```
+
+### ClassroomAnalytics Schema (Aggregated — for AI Data Analyst)
+```javascript
+{
+  classroomCode: String,
+  department: String,
+  college: String,
+  period: Enum['daily', 'weekly', 'monthly'],
+  date: Date,
+  metrics: {
+    totalStudyHours: Number,
+    averageStudyHours: Number,
+    totalQuizAttempts: Number,
+    averageQuizScore: Number,
+    highestQuizScore: Number,
+    averageResumeScore: Number,
+    highestResumeScore: Number,
+    totalInterviewSessions: Number,
+    activeStudents: Number,
+    attendancePercentage: Number,
+    assignmentSubmissionRate: Number,
+    averageStreak: Number
+  },
+  topPerformers: [{
+    studentId: ObjectId,
+    name: String,
+    studyHours: Number,
+    quizAvg: Number,
+    resumeScore: Number
+  }],
+  timestamps: true
+}
+```
+
+---
+
+## 7. API Architecture
+
+### Authentication
+```
+POST   /api/auth/register          → Register user (auto-generate classroomCode)
+POST   /api/auth/login             → Login (returns JWT + role)
+GET    /api/auth/me                → Get current user profile
+PUT    /api/auth/profile           → Update profile
+```
+
+### Dashboard
+```
+GET    /api/dashboard/student      → Student dashboard data (own classroom)
+GET    /api/dashboard/admin        → Admin dashboard (role-scoped data)
+GET    /api/dashboard/analytics    → AI data analytics endpoint
+POST   /api/dashboard/tasks       → Create daily task
+PUT    /api/dashboard/tasks/:id    → Toggle task completion
+```
+
+### Activity & Timer
+```
+POST   /api/activity/log           → Log a study session
+GET    /api/activity/history       → Get activity history
+GET    /api/activity/analytics     → Get analytics (charts data)
+GET    /api/activity/streak        → Get streak data
+```
+
+### Learning Modules
+```
+GET    /api/modules                → List all modules
+GET    /api/modules/:slug          → Get module detail
+GET    /api/modules/progress       → Get user's progress
+POST   /api/modules/:id/complete   → Mark lesson complete
+POST   /api/modules/:id/code       → Execute code in sandbox
+```
+
+### Assessment (Faculty)
+```
+POST   /api/assessment/assignment          → Create assignment
+GET    /api/assessment/assignment/:code    → Get assignments for classroom
+POST   /api/assessment/assignment/:id/submit → Student submits assignment
+PUT    /api/assessment/assignment/:id/grade  → Faculty grades submission
+POST   /api/assessment/attendance          → Mark attendance
+GET    /api/assessment/attendance/:code    → Get attendance for classroom
+POST   /api/assessment/announcement        → Create announcement
+GET    /api/assessment/announcement/:code  → Get announcements for classroom
+```
+
+### Resume
+```
+POST   /api/resume/analyze         → Upload & analyze resume
+GET    /api/resume/history         → Get past resume analyses
+```
+
+### Interview
+```
+POST   /api/interview/start        → Start AI interview session
+POST   /api/interview/respond      → Send response, get AI reply
+GET    /api/interview/history      → Past interview sessions
+```
+
+### AI Data Analyst (Admin)
+```
+POST   /api/analyst/query          → Natural language query
+GET    /api/analyst/report/:scope  → Get pre-built report (class/dept/college)
+GET    /api/analyst/compare        → Compare classrooms/departments
+POST   /api/analyst/export         → Export data as PDF/CSV
+```
+
+### Activities (MNC Programs)
+```
+GET    /api/programs               → List all MNC programs
+GET    /api/programs/recommended   → AI-recommended programs for user
+```
+
+### Benefits
+```
+GET    /api/benefits               → List all student benefits & discounts
+```
+
+---
+
+## 8. Role-Based Access Control (RBAC)
+
+### Middleware Implementation
+```javascript
+// Role hierarchy levels
+const ROLE_HIERARCHY = {
+  student: 1,
+  faculty: 2,
+  hod: 3,
+  placement: 4,
+  principal: 5
+};
+
+// Data scope middleware
+const scopeData = (req, res, next) =&gt; {
+  const user = req.user;
+  switch(user.role) {
+    case 'student':
+      req.scope = { classroomCode: user.classroomCode };
+      break;
+    case 'faculty':
+      req.scope = { classroomCode: { $in: user.assignedClassrooms } };
+      break;
+    case 'hod':
+      req.scope = { department: user.department, college: user.college };
+      break;
+    case 'principal':
+    case 'placement':
+      req.scope = { college: user.college };
+      break;
+  }
+  next();
+};
+```
+
+### Page Access Matrix
+
+| Page | Student | Faculty | HOD | Principal | Placement |
+|---|---|---|---|---|---|
+| Dashboard (own) | ✅ Full | ✅ Full | ✅ Full | ✅ Full | ✅ Full |
+| Learning Hub | ✅ Full | 👁️ View | 👁️ View | 👁️ View | 👁️ View |
+| Live Interview | ✅ Full | 👁️ View | 👁️ View | 👁️ View | 👁️ View |
+| AI Resume | ✅ Full | 👁️ View | 👁️ View | 👁️ View | 👁️ View |
+| Roadmap | ✅ Full | 👁️ View | 👁️ View | 👁️ View | 👁️ View |
+| College Assessment | 📖 Read | ✏️ CRUD | 👁️ View | 👁️ View | 👁️ View |
+| Curriculum Activities | ✅ Full | 👁️ View | 👁️ View | 👁️ View | 👁️ View |
+| Student Benefits | ✅ Full | 👁️ View | 👁️ View | 👁️ View | 👁️ View |
+| AI Data Analyst | ❌ | ❌ | ✅ Full | ✅ Full | ✅ Full |
+
+---
+
+## 9. Tech Stack & Infrastructure
+
+### Frontend (Client)
+| Technology | Purpose |
+|---|---|
+| **React 18** | UI framework |
+| **React Router v6** | Client-side routing |
+| **Framer Motion** | Animations & transitions |
+| **Recharts** | Data visualization charts |
+| **Lucide React** | Icon library |
+| **Monaco Editor** | In-browser code editor |
+| **Socket.io Client** | Real-time features (chat, live data) |
+| **Web Speech API** | Speech-to-Text & Text-to-Speech for AI interview |
+| **Web Audio API** | Binaural beats generation |
+| **Axios** | HTTP client |
+
+### Backend (Server)
+| Technology | Purpose |
+|---|---|
+| **Node.js + Express** | REST API server |
+| **MongoDB + Mongoose** | Database & ODM |
+| **Socket.io** | WebSocket server (chat, real-time updates) |
+| **JWT** | Authentication tokens |
+| **bcryptjs** | Password hashing |
+| **Multer** | File uploads (resume, assignments) |
+| **pdf-parse** | Resume PDF parsing |
+| **Zod** | Input validation |
+| **node-cron** | Scheduled jobs (daily analytics aggregation) |
+
+### AI / ML Services
+| Service | Purpose |
+|---|---|
+| **Google Gemini API / OpenAI GPT** | AI interview responses, data analysis queries, AI-powered recommendations |
+| **Natural Language Processing** | Query parsing for AI data analyst |
+
+### Infrastructure
+| Component | Tech |
+|---|---|
+| **Hosting** | Vercel (frontend), Railway/Render (backend) |
+| **Database** | MongoDB Atlas (cloud) |
+| **File Storage** | Cloudinary or AWS S3 |
+| **CI/CD** | GitHub Actions |
+
+---
+
+## 10. Design System & UX Guidelines
+
+### Visual Identity
+- **Primary Color**: Cool indigo/slate (professional, trustworthy)
+- **Accent Color**: Vibrant cyan/teal (modern, tech-forward)
+- **Background**: Deep dark mode (#0a0a0f) with subtle gradients
+- **Glass Morphism**: Frosted glass cards with backdrop blur
+- **Typography**: Inter / Outfit (Google Fonts) — clean, modern
+- **Border Radius**: Generous (2xl / 3xl) for premium feel
+- **Shadows**: Subtle glow effects using primary color
+
+### Animation Guidelines
+- Page transitions: Fade + slide up (300ms)
+- Card hover: Scale 1.02 + shadow lift
+- Modal: Spring animation with bounce
+- Loading states: Skeleton screens, not spinners
+- Celebration: Confetti particles (canvas-confetti library)
+- Charts: Animated on first render
+
+### Responsive Breakpoints
+- Mobile: &lt; 640px (single column, stacked)
+- Tablet: 640px – 1024px (2-column grids)
+- Desktop: &gt; 1024px (full multi-column layouts)
+- All pages MUST be fully responsive and touch-friendly
+
+### Accessibility
+- Semantic HTML5 elements
+- ARIA labels on interactive elements
+- Keyboard navigation support
+- High contrast ratios (WCAG 2.1 AA)
+- Focus indicators on all interactive elements
+
+---
+
+## ⚡ Implementation Priority Order
+
+```
+Phase 1 (Foundation)
+├── Classroom Code System (User model + registration)
+├── Enhanced RBAC middleware
+├── College Assessment MVP (assignments, attendance, notices)
+└── Streak system with celebration animations
+
+Phase 2 (Core Features)
+├── Binaural Beats player
+├── Daily Task checklist
+├── Learning Hub with in-browser terminal
+├── Course group discussions
+└── Live AI Interview with 2-way communication
+
+Phase 3 (Analytics & AI)
+├── AI Data Analyst integration
+├── Classroom-level data aggregation CRON jobs
+├── Visualization dashboards for HOD/Principal/Placement
+├── Natural language query interface
+└── PDF/CSV report export
+
+Phase 4 (Content & Polish)
+├── MNC Programs page (Curriculum Activities)
+├── Student Benefits & Discounts page
+├── Foreign language learning section
+├── Performance optimization
+└── PWA & push notifications
+```
+
+---
+
+&gt; **This is a living document. As features are built, update status markers and add implementation notes.**
+
+    </textarea>
+    <script>
+        document.getElementById('content').innerHTML = marked.parse(document.getElementById('markdown-content').value);
+    </script>
+</body>
+</html>

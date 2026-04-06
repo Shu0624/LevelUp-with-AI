@@ -1,0 +1,129 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Human, approachable colors - Light Theme (default) */
+    --background: 0 0% 100%; /* Pure white background */
+    --foreground: 220 30% 20%; /* Charcoal, soft text */
+    
+    --card: 210 20% 98%; /* Very light grey/blue */
+    --card-foreground: 220 30% 20%;
+ 
+    --popover: 210 20% 98%;
+    --popover-foreground: 220 30% 20%;
+ 
+    --primary: 220 90% 56%; /* Clean professional blue */
+    --primary-foreground: 0 0% 100%;
+ 
+    --secondary: 210 20% 94%; /* Soft grey for secondary buttons */
+    --secondary-foreground: 220 30% 30%;
+ 
+    --muted: 210 20% 92%;
+    --muted-foreground: 220 15% 50%;
+ 
+    --accent: 250 90% 65%; /* Cool violet accent */
+    --accent-foreground: 0 0% 100%;
+ 
+    --destructive: 350 80% 60%; /* Soft red */
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 140 60% 50%; /* Friendly green */
+    --success-foreground: 0 0% 100%;
+    
+    --warning: 45 95% 55%;
+    --warning-foreground: 0 0% 100%;
+ 
+    --border: 210 15% 85%;
+    --input: 210 15% 90%;
+    --ring: 210 100% 55%;
+ 
+    --radius: 1.25rem; /* Very rounded borders (human/friendly aspect) */
+  }
+ 
+  .dark {
+    /* Dark Theme - softened */
+    --background: 220 20% 12%; 
+    --foreground: 210 20% 90%;
+ 
+    --card: 220 20% 16%;
+    --card-foreground: 210 20% 90%;
+ 
+    --popover: 220 20% 16%;
+    --popover-foreground: 210 20% 90%;
+ 
+    --primary: 220 90% 65%; /* Clean blue */
+    --primary-foreground: 220 20% 12%;
+ 
+    --secondary: 220 20% 22%;
+    --secondary-foreground: 210 20% 90%;
+ 
+    --muted: 220 20% 22%;
+    --muted-foreground: 220 15% 70%;
+ 
+    --accent: 250 85% 72%;
+    --accent-foreground: 0 0% 100%;
+ 
+    --destructive: 350 80% 65%;
+    --destructive-foreground: 210 20% 90%;
+    
+    --success: 140 50% 55%;
+    --success-foreground: 220 20% 12%;
+    
+    --warning: 45 90% 60%;
+    --warning-foreground: 220 20% 12%;
+ 
+    --border: 220 20% 25%;
+    --input: 220 20% 25%;
+    --ring: 210 100% 65%;
+  }
+}
+ 
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased transition-colors duration-300;
+  }
+}
+
+/* Beautiful Friendly Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.2);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.4);
+}
+
+/* Pattern */
+.bg-grid-pattern {
+  background-image: radial-gradient(hsl(var(--border)) 1px, transparent 1px);
+  background-size: 30px 30px;
+  opacity: 0.5;
+}
+
+/* Soft, approachable card style */
+.glass-morphism {
+  @apply bg-card border border-border shadow-sm rounded-3xl overflow-hidden transition-all;
+}
+
+/* Duolingo style button pop (only applies to things with pop-button class) */
+.pop-button {
+  transform: translateY(0);
+  box-shadow: 0 4px 0 hsl(var(--primary)/0.5);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+.pop-button:active {
+  transform: translateY(4px);
+  box-shadow: 0 0 0 transparent;
+}

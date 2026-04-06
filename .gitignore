@@ -1,0 +1,10 @@
+node_modules/
+dist/
+build/
+.env
+*.log
+.DS_Store
+.vscode/
+.hackathon_submission.md
+.LevelUp_Master_Prompt.html
+.CHANGELOG.md
